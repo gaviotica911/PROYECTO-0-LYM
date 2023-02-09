@@ -4,8 +4,9 @@ Created on Wed Feb  8 13:36:05 2023
 
 @author: Gabriela
 """
-
+import nltk
 from nltk.tokenize import wordpunct_tokenize
+from nltk.tokenize import WhitespaceTokenizer
 
 
 "Def comandos de una letra"
@@ -54,6 +55,13 @@ def cargarArchivo(Archivo):
     
 def generar_tokens(archivo):
     tokens=wordpunct_tokenize(archivo)
+    for i in range(len(tokens)):
+        if tokens[i]=="[|":
+            tokens[i]="|"
+            tokens.insert(i,"[")
+            
+
+
     return tokens
     
 
@@ -125,14 +133,14 @@ def verificar_funciones(tokens):
     for i in(range(len(tokens))):
         if tokens[i] in funiones_creadas:
             if tokens[i+1]!="[" and tokens[i+2]!="|":
-                correccto=False
+                correcto=False
                 break
             if tokens[i+2]=="|":
                 for j in range(1,10):
                     if tokens[i+j]=="|":
                         encontro=True
                         poscion_palito=i+j
-                        print(poscion_palito)
+                        
                       
         if tokens[i]=="]":
             break
@@ -142,12 +150,35 @@ def verificar_funciones(tokens):
     for i in range(poscion_palito, len(tokens)):
         if tokens[poscion_palito+1] not in complex_commands or tokens[poscion_palito+1] not in complex_commands_2:
             correcto=False
-            
-            
-    
+            verificar_commands(tokens,poscion_palito+1)
     return correcto
                     
-               
+def verificar_commands(tokens, posicion):
+    correcto=True
+    if tokens[posicion+1]==":":
+        if tokens[posicion] =="assignTo":
+                variables[tokens[posicion+4]]=tokens[posicion+2]
+                if [tokens[posicion+5]]!=";":
+                    correcto=False
+
+        elif tokens[posicion] =="turn":
+            if tokens[posicion]+1 not in orientaciones:
+                correcto=False
+                
+        elif tokens[posicion] =="move":
+            if tokens[posicion]+1 not in variables and (tokens[posicion]+1).isdigit()==False :
+                correcto=False
+                print(correcto)
+
+
+    else:
+        correcto:False
+    return correcto
+        
+
+
+
+           
             
             
  
@@ -159,5 +190,5 @@ print("----------")
 guaradar_variables(tokens)
 guardar_funciones(tokens)
 #print(contar_corechetes(tokens), contar_parentesis(tokens), contar_palos(tokens))
-print(verificar_funciones(tokens))
-            
+verificar_funciones(tokens)
+print(variables)
