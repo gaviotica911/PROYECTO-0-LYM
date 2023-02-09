@@ -162,26 +162,60 @@ def verificar_commands(tokens, posicion):
                     correcto=False
 
         elif tokens[posicion] =="turn":
-            if tokens[posicion]+1 not in orientaciones:
+            if tokens[posicion+1] not in orientaciones:
+                correcto=False
+
+        elif tokens[posicion] =="move":
+            if tokens[posicion+1] not in variables and (tokens[posicion+1]).isdigit()==False :
                 correcto=False
                 
-        elif tokens[posicion] =="move":
-            if tokens[posicion]+1 not in variables and (tokens[posicion]+1).isdigit()==False :
+        elif tokens[posicion] =="face" or tokens[posicion] =="facing":
+            if tokens[posicion+1] not in direcciones:
                 correcto=False
-                print(correcto)
-
-
     else:
         correcto:False
     return correcto
+
+
+
+def verficicar_condicional(tokens,posicion):
+    correcto=True
+    if tokens[posicion]!="if": 
+        if tokens[posicion+1]!=":":
+            correcto=False
+        if tokens[posicion+2] in conditions: 
+            vc=verificar_commands(tokens,(posicion+2))
+            if vc==False:
+                correcto=False
+        else:
+            correcto=False
+        for i in range(1, len(tokens)):
+            if tokens[posicion+i]=="then"and tokens[posicion+i+1] and tokens[posicion+i+2]=="[":
+                vc=verificar_commands(tokens,(posicion+i+3))
+                if vc==False:
+                    correcto=False                        
+            else:  
+                correcto=False
         
+            if tokens[posicion+i]=="else" and tokens[posicion+i+1]==":":
+                vc=verificar_commands(tokens,(posicion+i+3))
+                if vc==False:
+                    correcto=False                        
+            else:  
+                correcto=False
+    return correcto 
+
+def verificar_todo(tokens):
+    for i in range(len(tokens)):
+        xs=verficicar_condicional(tokens,i)
+        if xs:
+            print("bien")
+        else:
+            print("mal")
 
 
 
-           
-            
-            
- 
+
         
 archivo=cargarArchivo("robot_prueba.txt")
 tokens=generar_tokens(archivo)
@@ -189,6 +223,5 @@ print(tokens)
 print("----------")
 guaradar_variables(tokens)
 guardar_funciones(tokens)
+verificar_todo(tokens)
 #print(contar_corechetes(tokens), contar_parentesis(tokens), contar_palos(tokens))
-verificar_funciones(tokens)
-print(variables)
