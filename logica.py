@@ -5,11 +5,8 @@ Created on Wed Feb  8 13:36:05 2023
 @author: Gabriela
 """
 
-import lexer
-import nltk
-from nltk.tokenize import WhitespaceTokenizer 
 from nltk.tokenize import wordpunct_tokenize
-from nltk.tokenize import word_tokenize
+
 
 "Def comandos de una letra"
 #simple_commands={"M":"to move forward","R":"to turn right","C":"to drop a chip", "B":"to place a balloon","c":"to pickup a chip","b":"to grab a balloon", "P":"to pop a balloon"}
@@ -153,13 +150,7 @@ def verificar_funciones(tokens):
                
             
             
-        
-    
-    
-            
-        
-    
-    
+ 
         
 archivo=cargarArchivo("robot_prueba.txt")
 tokens=generar_tokens(archivo)
