@@ -193,22 +193,23 @@ def verficicar_condicional(tokens,posicion):
             correcto=False
     else:
         correcto=False
-        if correcto:
-            for i in range(1,10):
-                print(tokens[posicion])
-                if tokens[posicion+i]=="then"and tokens[posicion+i+1] and tokens[posicion+i+2]=="[":
+    if correcto:
+        for i in range(1,10):
+            if tokens[posicion+i]=="then":
+                if tokens[posicion+i]=="then"and tokens[posicion+i+1]==":" and tokens[posicion+i+2]=="[":
+
                     vc=verificar_commands(tokens,(posicion+i+3))
                     if vc==False:
                         correcto=False                        
                 else:  
                     correcto=False
-        
-                if tokens[posicion+i]=="else" and tokens[posicion+i+1]==":":
-                    vc=verificar_commands(tokens,(posicion+i+3))
-                    if vc==False:
-                        correcto=False                        
-                else:  
-                    correcto=False
+                if tokens[posicion+i]=="else" :        
+                    if tokens[posicion+i]=="else" and tokens[posicion+i+1]==":":
+                        vc=verificar_commands(tokens,(posicion+i+3))
+                        if vc==False:
+                            correcto=False                        
+                    else:  
+                        correcto=False
     
     return correcto 
 
@@ -220,27 +221,43 @@ def verficicar_loop(tokens,posicion):
         vc=verificar_commands(tokens,(posicion+2))
         if vc==False:
             correcto=False
-    if tokens[posicion+2] in conditions: 
-    
+
+    else:
         correcto=False
-        if correcto:
-            for i in range(1,10):
-                print(tokens[posicion])
-                if tokens[posicion+i]=="then"and tokens[posicion+i+1] and tokens[posicion+i+2]=="[":
+    if correcto:
+        for i in range(1,10):
+            if tokens[posicion+i]=="do":
+                if tokens[posicion+i]=="do"and tokens[posicion+i+1]==":" and tokens[posicion+i+2]=="[":  
                     vc=verificar_commands(tokens,(posicion+i+3))
                     if vc==False:
-                        correcto=False                        
-                else:  
+                        correcto=False  
+                    print(vc, "thisssssss")
+                    if correcto :
+                         break   
+                
+                else:
                     correcto=False
-        
-                if tokens[posicion+i]=="else" and tokens[posicion+i+1]==":":
-                    vc=verificar_commands(tokens,(posicion+i+3))
-                    if vc==False:
-                        correcto=False                        
-                else:  
-                    correcto=False
-    
+
+              
+
+              
     return correcto 
+
+def verficicar_RepeatTimes(tokens,posicion):
+    correcto=True
+    if tokens[posicion+1]!=":":
+        correcto=False
+    if tokens[posicion+2].isdigit()==False and tokens[posicion+3]!="[": 
+        correcto=False
+    if tokens[posicion+4] in complex_commands_2_keys or tokens[posicion+4] in complex_commands_keys:
+        vc=verificar_commands(tokens,(posicion+2))
+        if vc==False:
+            correcto=False
+    else:
+        correcto=False  
+    return correcto 
+
+
 def verificar_todo(tokens):
     correcto=True
     termino=True
@@ -267,6 +284,14 @@ def verificar_todo(tokens):
                 if verficicar_condicional(tokens,i)!=True:
                     print("error", i, "if")
                     correcto=False
+            if tokens[i] =="repeat": 
+                if verficicar_RepeatTimes(tokens,i)!=True:
+                    print("error", i, "repeat")
+                    correcto=False
+            if tokens[i] =="while": 
+                if verficicar_loop(tokens,i)!=True:
+                    print("error", i, "while")
+                    correcto=False
         termino=False
     return correcto
             
@@ -280,5 +305,5 @@ guaradar_variables(tokens)
 guardar_funciones(tokens)
 print(verificar_todo(tokens))
 
-
+print(tokens[40])
 #print(contar_corechetes(tokens), contar_parentesis(tokens), contar_palos(tokens))

@@ -4,11 +4,13 @@ PROCS
 putCB [ |c, b| assignTo: 1, one;
 put : c, chips; put: b , balloons ]
 goNorth [| |
-while : canMoveToThe: 1 , north : [ moveInDir: 1 , north ] 
+while : canMoveToThe: 1 , north do: [ moveInDir: 1 , north ] 
 ]
 goWest [ | | if : canMoveInDir: 1, west then: [moveInDir: 1 ,
-west] else : nop: ]
+west] else : turn: left ]
 moveToThe:  3, Ballons
+repeat: 6 [ moveInDir: 1 , north ] 
+
 [
 goTo: 3, 3;
 putcb: 2 ,1
