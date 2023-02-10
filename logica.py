@@ -13,8 +13,8 @@ from nltk.tokenize import WhitespaceTokenizer
 #simple_commands={"M":"to move forward","R":"to turn right","C":"to drop a chip", "B":"to place a balloon","c":"to pickup a chip","b":"to grab a balloon", "P":"to pop a balloon"}
 #simple_commands_keys=simple_commands.keys()
 "Comandos simples con parametros"
-simple_comands_withPa={"J":"to jump forward n steps. It may jump over obstacles, but the final positionshould not have an obstacle","G":"to go to position (x,y). Position (x,y) should not have an obstacle."}
-simple_comands_withPa_keys=simple_comands_withPa.keys()
+#simple_comands_withPa={"J":"to jump forward n steps. It may jump over obstacles, but the final positionshould not have an obstacle","G":"to go to position (x,y). Position (x,y) should not have an obstacle."}
+#simple_comands_withPa_keys=simple_comands_withPa.keys()
 "Simbolos y palabras importantes"
 keyW={"VARS":"declaracion de variables", "PROCS":"procedure declaration", "[": "open procedure definition", ";":"semicolon","]":"close procedure definition", "ROBOT_R":"Inicialización","|":"The parameters are specified by a list of names separated by commas preceded and followed by the symbol", "[|":"procedure definitions and parameters"}
 keyW_keys=keyW.keys()
@@ -39,7 +39,7 @@ variables={}
 funiones_creadas={}
 
 "lista con todas las listas anteriores"
-lista=[simple_comands_withPa_keys,keyW_keys,complex_commands_2_keys,complex_commands_keys,contrl_str,conditions,otros,direcciones,objetos, variables]
+lista=[keyW_keys,complex_commands_2_keys,complex_commands_keys,contrl_str,conditions,otros,direcciones,objetos, variables]
 listaGrande=[]
 
 for i in lista:
@@ -59,6 +59,7 @@ def generar_tokens(archivo):
         if tokens[i]=="[|":
             tokens[i]="|"
             tokens.insert(i,"[")
+    
             
 
 
@@ -90,21 +91,11 @@ def contar_corechetes(tokens):
             abrir+=1
         elif i=="]":
             cerrar+=1
-        if abrir != cerrar:
+    if abrir != cerrar:
             rta=False
-        return rta  
-def contar_parentesis(tokens):
-    abrir=0
-    cerrar=0
-    rta=True
-    for i in tokens:
-        if i=="(":
-            abrir+=1
-        elif i==")":
-            cerrar+=1
-        if abrir != cerrar:
-            rta=False
-        return rta  
+    
+    return rta  
+ 
 def contar_palos(tokens):
     cont=0
     rta=True
@@ -115,12 +106,11 @@ def contar_palos(tokens):
    
     if (cont%2) !=0:
         rta=False
+    
     return rta
 def inializacion(tokens):
     correcto=True
     if tokens[0]!="ROBOT_R":
-        correcto=False
-    if tokens[1]!="VARS":   
         correcto=False
     for i in range(len(tokens)):
         if tokens[i]=="PROCS":
@@ -158,9 +148,9 @@ def verificar_commands(tokens, posicion):
     if tokens[posicion+1]==":":
         if tokens[posicion] =="assignTo":
                 variables[tokens[posicion+4]]=tokens[posicion+2]
-                if [tokens[posicion+5]]!=";":
+                if tokens[posicion+5]!=";":
                     correcto=False
-
+            
         elif tokens[posicion] =="turn":
             if tokens[posicion+1] not in orientaciones:
                 correcto=False
@@ -174,44 +164,70 @@ def verificar_commands(tokens, posicion):
                 correcto=False
     else:
         correcto:False
+   
     return correcto
 
 
 
 def verficicar_condicional(tokens,posicion):
     correcto=True
-    if tokens[posicion]!="if": 
-        if tokens[posicion+1]!=":":
+    
+    if tokens[posicion+1]!=":":
+        correcto=False
+    if tokens[posicion+2] in conditions: 
+        vc=verificar_commands(tokens,(posicion+2))
+        if vc==False:
             correcto=False
-        if tokens[posicion+2] in conditions: 
-            vc=verificar_commands(tokens,(posicion+2))
-            if vc==False:
-                correcto=False
-        else:
-            correcto=False
-        for i in range(1, len(tokens)):
-            if tokens[posicion+i]=="then"and tokens[posicion+i+1] and tokens[posicion+i+2]=="[":
-                vc=verificar_commands(tokens,(posicion+i+3))
-                if vc==False:
-                    correcto=False                        
-            else:  
-                correcto=False
+    else:
+        correcto=False
+        if correcto:
+            for i in range(1,10):
+                print(tokens[posicion])
+                if tokens[posicion+i]=="then"and tokens[posicion+i+1] and tokens[posicion+i+2]=="[":
+                    vc=verificar_commands(tokens,(posicion+i+3))
+                    if vc==False:
+                        correcto=False                        
+                else:  
+                    correcto=False
         
-            if tokens[posicion+i]=="else" and tokens[posicion+i+1]==":":
-                vc=verificar_commands(tokens,(posicion+i+3))
-                if vc==False:
-                    correcto=False                        
-            else:  
-                correcto=False
+                if tokens[posicion+i]=="else" and tokens[posicion+i+1]==":":
+                    vc=verificar_commands(tokens,(posicion+i+3))
+                    if vc==False:
+                        correcto=False                        
+                else:  
+                    correcto=False
+    
     return correcto 
 
 def verificar_todo(tokens):
-    for i in range(len(tokens)):
-        xs=verficicar_condicional(tokens,i)
-        if xs:
-            print("bien")
-        else:
-            print("mal")
+    correcto=True
+    termino=True
+    palos=None
+    parentesis=None 
+    corechetes=None
+    while correcto and termino:
+        if inializacion(tokens)==False:
+            print("error al iniar")
+            correcto=False  
+        palos=contar_palos(tokens)   
+        corechetes=contar_corechetes(tokens)
+        if palos ==False or  corechetes ==False:
+            correcto=False
+            print("error de parentesis, parentesis o palos")
+        guardar_funciones(tokens)
+        guaradar_variables(tokens)
+        for i in range(len(tokens)):
+            if tokens[i] in conditions or tokens[i] in complex_commands_2_keys or tokens[i] in complex_commands_keys:
+                if verificar_commands(tokens, i)!=True:
+                    print("error", i, "comandos")
+                    correcto=False                    
+            if tokens[i] =="if": 
+                if verficicar_condicional(tokens,i)!=True:
+                    print("error", i, "if")
+                    correcto=False
+        termino=False
+    return correcto
+            
 
 
 
@@ -223,5 +239,6 @@ print(tokens)
 print("----------")
 guaradar_variables(tokens)
 guardar_funciones(tokens)
-verificar_todo(tokens)
+print(verificar_todo(tokens))
+
 #print(contar_corechetes(tokens), contar_parentesis(tokens), contar_palos(tokens))
