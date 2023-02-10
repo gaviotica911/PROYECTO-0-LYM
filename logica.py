@@ -114,7 +114,7 @@ def inializacion(tokens):
         correcto=False
     for i in range(len(tokens)):
         if tokens[i]=="PROCS":
-            if tokens[i-1]!=";":
+            if tokens[i-1]!="ROBOT_R" and tokens[i-1]!=";" :
                 correcto=False
     return correcto
 def verificar_funciones(tokens):
@@ -147,42 +147,44 @@ def verificar_commands(tokens, posicion):
     correcto=True
     if tokens[posicion+1]==":":
         if tokens[posicion] =="assignTo":
-                variables[tokens[posicion+4]]=tokens[posicion+2]
-                if tokens[posicion+5]!=";":
+                if tokens[posicion+2].isdigit()==False:
                     correcto=False
-            
+                else:
+                    variables[tokens[posicion+4]]=tokens[posicion+2]
+                if tokens[posicion+5]!=";":
+                    correcto=False  
         elif tokens[posicion] =="turn":
-            if tokens[posicion+1] not in orientaciones:
+            if tokens[posicion+2] not in orientaciones:
                 correcto=False
-
         elif tokens[posicion] =="move":
-            if tokens[posicion+1] not in variables and (tokens[posicion+1]).isdigit()==False :
+            if tokens[posicion+2] not in variables and (tokens[posicion+2]).isdigit()==False :
                 correcto=False
-                
         elif tokens[posicion] =="face" or tokens[posicion] =="facing":
-            if tokens[posicion+1] not in direcciones:
+            if tokens[posicion+2] not in direcciones:
                 correcto=False
         elif tokens[posicion] == "put" or tokens[posicion] == "pick" or tokens[posicion] == "canPut" or tokens[posicion] == "canPick":
-            if (tokens [posicion + 1]).isdigit() == False and tokens[posicion  +2 ] not in objetos:
+            if (tokens [posicion + 2]).isdigit() == False and tokens[posicion  +4 ] not in objetos:
                 correcto = False
         elif tokens[posicion] == "moveToThe" or tokens[posicion] == "jumpToThe" or tokens[posicion] == "canMoveToThe" or tokens[posicion] == "canJumpToThe":
-            if (tokens [posicion + 1]).isdigit() == False and tokens[ posicion +2 ] not in orientaciones:
+            if (tokens [posicion + 2]).isdigit() == False and tokens[ posicion +4 ] not in orientaciones:
                 correcto = False
         elif tokens[posicion] == "moveInDir" or tokens[posicion] == "jumpInDir" or tokens[posicion] == "canMoveInDir" or tokens[posicion] == "canJumpInDir":
-            if (tokens [posicion + 1]).isdigit() == False and tokens[ posicion +2 ] not in direcciones:
+            x=(tokens [posicion + 2]).isdigit()
+            #print(tokens[posicion], (tokens [posicion + 2]),tokens[ posicion +4 ] ,x)
+            if  x== False: 
                 correcto = False
-                
-
+            if tokens[ posicion +4 ] not in direcciones:
+                 correcto = False
+            #print(correcto)
     else:
         correcto:False
-   
+    
     return correcto
 
 
 
 def verficicar_condicional(tokens,posicion):
     correcto=True
-    
     if tokens[posicion+1]!=":":
         correcto=False
     if tokens[posicion+2] in conditions: 
@@ -210,11 +212,39 @@ def verficicar_condicional(tokens,posicion):
     
     return correcto 
 
+def verficicar_loop(tokens,posicion):
+    correcto=True
+    if tokens[posicion+1]!=":":
+        correcto=False
+    if tokens[posicion+2] in conditions: 
+        vc=verificar_commands(tokens,(posicion+2))
+        if vc==False:
+            correcto=False
+    if tokens[posicion+2] in conditions: 
+    
+        correcto=False
+        if correcto:
+            for i in range(1,10):
+                print(tokens[posicion])
+                if tokens[posicion+i]=="then"and tokens[posicion+i+1] and tokens[posicion+i+2]=="[":
+                    vc=verificar_commands(tokens,(posicion+i+3))
+                    if vc==False:
+                        correcto=False                        
+                else:  
+                    correcto=False
+        
+                if tokens[posicion+i]=="else" and tokens[posicion+i+1]==":":
+                    vc=verificar_commands(tokens,(posicion+i+3))
+                    if vc==False:
+                        correcto=False                        
+                else:  
+                    correcto=False
+    
+    return correcto 
 def verificar_todo(tokens):
     correcto=True
     termino=True
-    palos=None
-    parentesis=None 
+    palos=None 
     corechetes=None
     while correcto and termino:
         if inializacion(tokens)==False:
@@ -229,7 +259,8 @@ def verificar_todo(tokens):
         guaradar_variables(tokens)
         for i in range(len(tokens)):
             if tokens[i] in conditions or tokens[i] in complex_commands_2_keys or tokens[i] in complex_commands_keys:
-                if verificar_commands(tokens, i)!=True:
+                comandos=verificar_commands(tokens, i)
+                if comandos!=True:
                     print("error", i, "comandos")
                     correcto=False                    
             if tokens[i] =="if": 
@@ -240,10 +271,7 @@ def verificar_todo(tokens):
     return correcto
             
 
-
-
-
-        
+      
 archivo=cargarArchivo("robot_prueba.txt")
 tokens=generar_tokens(archivo)
 print(tokens)
@@ -251,5 +279,6 @@ print("----------")
 guaradar_variables(tokens)
 guardar_funciones(tokens)
 print(verificar_todo(tokens))
+
 
 #print(contar_corechetes(tokens), contar_parentesis(tokens), contar_palos(tokens))
