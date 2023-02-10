@@ -46,13 +46,15 @@ for i in lista:
     for j in i:
         listaGrande.append(j)
         
+#Función para cargar el archivo.
 
 def cargarArchivo(Archivo):
     archivo=open(Archivo)
     archivo=archivo.read()
     return archivo
     
-    
+#Función que dado un ejemplo, lo divide en tokens.
+   
 def generar_tokens(archivo):
     tokens=wordpunct_tokenize(archivo)
     for i in range(len(tokens)):
@@ -65,6 +67,7 @@ def generar_tokens(archivo):
 
     return tokens
     
+#Función para guardar las variables.
 
 def guaradar_variables(tokens):
     for i in range(len(tokens)):
@@ -77,11 +80,16 @@ def guaradar_variables(tokens):
                     break
         if tokens[i]=="PROCS":
             break
+
+#Función para guardar las funciones.
+
 def guardar_funciones(tokens):
     for i in range(len(tokens)-1):
         if tokens[i]  not in listaGrande and (tokens[i+1]=="[") and tokens[i].isdigit()==False:
             funiones_creadas[tokens[i]]=None
-            
+
+#Función para contar los corchetes del programa. 
+          
 def contar_corechetes(tokens):
     abrir=0
     cerrar=0
@@ -95,7 +103,9 @@ def contar_corechetes(tokens):
             rta=False
     
     return rta  
- 
+
+#Función para contar los parentesis del programa.
+
 def contar_palos(tokens):
     cont=0
     rta=True
@@ -108,6 +118,9 @@ def contar_palos(tokens):
         rta=False
     
     return rta
+
+#Función para verificar el esqueleto de inicio del programa.
+
 def inializacion(tokens):
     correcto=True
     if tokens[0]!="ROBOT_R":
@@ -126,6 +139,8 @@ def inializacion(tokens):
         correcto==False
 
     return correcto
+
+#Función para verificar las funciones.
 
 def verificar_funciones(tokens,posicion):
     correcto=True
@@ -147,6 +162,8 @@ def verificar_funciones(tokens,posicion):
                         correcto=False
                             
     return correcto
+
+#Función para verificar la estructura de los comandos, como lo son los parametros.
                     
 def verificar_commands(tokens, posicion):
     correcto=True
@@ -181,12 +198,20 @@ def verificar_commands(tokens, posicion):
             if tokens[ posicion +4 ] not in direcciones:
                  correcto = False
             #print(correcto)
+        elif tokens[posicion] == "not":
+                if tokens[posicion + 2] not in conditions:
+                    correcto = False
+        elif tokens[posicion] == "nop":
+            if tokens[posicion + 2] != "":
+                correcto = False
+
     else:
         correcto:False
     
     return correcto
 
 
+#Función para verificar la estructura de los condicionales if.
 
 def verficicar_condicional(tokens,posicion):
     correcto=True
@@ -218,6 +243,9 @@ def verficicar_condicional(tokens,posicion):
     
     return correcto 
 
+
+#Función para verificar la estructura de los loops con while.
+
 def verficicar_loop(tokens,posicion):
     correcto=True
     if tokens[posicion+1]!=":":
@@ -248,6 +276,8 @@ def verficicar_loop(tokens,posicion):
               
     return correcto 
 
+#Función para verificar la estructura Repeat Times con for.
+
 def verficicar_RepeatTimes(tokens,posicion):
     correcto=True
     if tokens[posicion+1]!=":":
@@ -262,6 +292,7 @@ def verficicar_RepeatTimes(tokens,posicion):
         correcto=False  
     return correcto 
 
+#Función para verificar si todo el programa es funcional.
 
 def verificar_todo(tokens):
     correcto=True
