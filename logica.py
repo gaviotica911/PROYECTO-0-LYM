@@ -31,7 +31,7 @@ conditions=["facing","canPut","canPick","canMoveInDir","canJumpInDir","canMoveTo
 "INICIALIZADOR"
 inicializador="ROBOT_R"
 otros=[",",":",]
-objetos=["chips","balloons",]  ###QUE ES PUTCB
+objetos=["Chips","Balloons",]  ###QUE ES PUTCB
 direcciones=["north", "south", "east","west"] 
 orientaciones=["front","right", "left", "back"]
 
@@ -55,14 +55,6 @@ def cargarArchivo(Archivo):
     
 def generar_tokens(archivo):
     tokens=wordpunct_tokenize(archivo)
-    for i in range(len(tokens)):
-        if tokens[i]=="[|":
-            tokens[i]="|"
-            tokens.insert(i,"[")
-    
-            
-
-
     return tokens
     
 
@@ -91,6 +83,7 @@ def contar_corechetes(tokens):
             abrir+=1
         elif i=="]":
             cerrar+=1
+       
     if abrir != cerrar:
             rta=False
     
@@ -103,7 +96,7 @@ def contar_palos(tokens):
         if i=="|":
            
             cont+=1
-   
+    
     if (cont%2) !=0:
         rta=False
     
@@ -127,7 +120,7 @@ def inializacion(tokens):
 
     return correcto
 
-def verificar_funciones(tokens,posicion):
+def verificar_crear_funciones(tokens,posicion):
     correcto=True
     encontro=False
     poscion_palito=0
@@ -262,7 +255,13 @@ def verficicar_RepeatTimes(tokens,posicion):
         correcto=False  
     return correcto 
 
-
+def verificar_funciones(tokens,posicion):
+    correcto=True
+    
+    if tokens[posicion+2].isdigit()==False:
+        correcto=False
+    
+    return correcto
 def verificar_todo(tokens):
     correcto=True
     termino=True
@@ -298,10 +297,15 @@ def verificar_todo(tokens):
                 if verficicar_loop(tokens,i)!=True:
                     print("error", i, "while")
                     correcto=False
-            if tokens[i] in funiones_creadas:
+            if tokens[i] in funiones_creadas and tokens[i+1]!=":":
+                verificar=verificar_crear_funciones(tokens,i)
+                if verificar==False:
+                    print("Error en la funcion, linea", tokens[i], i)
+            if tokens[i] in funiones_creadas and tokens[i+1]==":":
                 verificar=verificar_funciones(tokens,i)
                 if verificar==False:
-                    print("Error en la funcion")
+                    print("Error en la funcion invocada, linea", tokens[i], i)
+
 
         termino=False
 
@@ -313,12 +317,13 @@ def verificar_todo(tokens):
             
 
       
-archivo=cargarArchivo("robot_prueba.txt")
+archivo=cargarArchivo("PruebaCompleja.txt")
 tokens=generar_tokens(archivo)
 print(tokens)
 print("----------")
 guaradar_variables(tokens)
 guardar_funciones(tokens)
 print(verificar_todo(tokens))
+
 
 #print(contar_corechetes(tokens), contar_parentesis(tokens), contar_palos(tokens))
