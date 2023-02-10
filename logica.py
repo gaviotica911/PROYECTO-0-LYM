@@ -162,6 +162,17 @@ def verificar_commands(tokens, posicion):
         elif tokens[posicion] =="face" or tokens[posicion] =="facing":
             if tokens[posicion+1] not in direcciones:
                 correcto=False
+        elif tokens[posicion] == "put" or tokens[posicion] == "pick" or tokens[posicion] == "canPut" or tokens[posicion] == "canPick":
+            if (tokens [posicion + 1]).isdigit() == False and tokens[posicion  +2 ] not in objetos:
+                correcto = False
+        elif tokens[posicion] == "moveToThe" or tokens[posicion] == "jumpToThe" or tokens[posicion] == "canMoveToThe" or tokens[posicion] == "canJumpToThe":
+            if (tokens [posicion + 1]).isdigit() == False and tokens[ posicion +2 ] not in orientaciones:
+                correcto = False
+        elif tokens[posicion] == "moveInDir" or tokens[posicion] == "jumpInDir" or tokens[posicion] == "canMoveInDir" or tokens[posicion] == "canJumpInDir":
+            if (tokens [posicion + 1]).isdigit() == False and tokens[ posicion +2 ] not in direcciones:
+                correcto = False
+                
+
     else:
         correcto:False
    
