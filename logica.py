@@ -79,7 +79,7 @@ def guaradar_variables(tokens):
             break
 def guardar_funciones(tokens):
     for i in range(len(tokens)-1):
-        if tokens[i]  not in listaGrande and (tokens[i+1]=="["):
+        if tokens[i]  not in listaGrande and (tokens[i+1]=="[") and tokens[i].isdigit()==False:
             funiones_creadas[tokens[i]]=None
             
 def contar_corechetes(tokens):
@@ -112,35 +112,40 @@ def inializacion(tokens):
     correcto=True
     if tokens[0]!="ROBOT_R":
         correcto=False
-    for i in range(len(tokens)):
-        if tokens[i]=="PROCS":
-            if tokens[i-1]!="ROBOT_R" and tokens[i-1]!=";" :
-                correcto=False
-    return correcto
-def verificar_funciones(tokens):
-    correcto=True
-    encontro=False
-    for i in(range(len(tokens))):
-        if tokens[i] in funiones_creadas:
-            if tokens[i+1]!="[" and tokens[i+2]!="|":
-                correcto=False
-                break
-            if tokens[i+2]=="|":
-                for j in range(1,10):
-                    if tokens[i+j]=="|":
-                        encontro=True
-                        poscion_palito=i+j
-                        
-                      
-        if tokens[i]=="]":
-            break
+    if tokens[1]!="VARS":
+        for i in range(len(tokens)):
+            if tokens[i]=="PROCS":
+                if tokens[i-1]!="ROBOT_R" :
+                    correcto=False
+    else:
+        for i in range(len(tokens)):
+            if tokens[i]=="PROCS":
+                encontro=False
             
     if encontro==False:
         correcto==False
-    for i in range(poscion_palito, len(tokens)):
-        if tokens[poscion_palito+1] not in complex_commands or tokens[poscion_palito+1] not in complex_commands_2:
-            correcto=False
-            verificar_commands(tokens,poscion_palito+1)
+
+    return correcto
+
+def verificar_funciones(tokens,posicion):
+    correcto=True
+    encontro=False
+    poscion_palito=0
+    if tokens[posicion+1]!="[" and tokens[posicion+2]!="|" :
+        correcto=False
+    if tokens[posicion+2]=="|":
+        for j in range(1,10):
+            if tokens[posicion+j]=="|":
+                encontro=True
+                poscion_palito= posicion+j                                
+            if encontro==False:
+                correcto==False
+            if correcto:
+                if (tokens[poscion_palito+1]  in complex_commands ) or tokens[poscion_palito+1] in complex_commands_2 :
+                    verificar= verificar_commands(tokens,poscion_palito+1)
+                    if verificar ==False:
+                        correcto=False
+                            
     return correcto
                     
 def verificar_commands(tokens, posicion):
@@ -231,7 +236,7 @@ def verficicar_loop(tokens,posicion):
                     vc=verificar_commands(tokens,(posicion+i+3))
                     if vc==False:
                         correcto=False  
-                    print(vc, "thisssssss")
+                
                     if correcto :
                          break   
                 
@@ -273,6 +278,7 @@ def verificar_todo(tokens):
             correcto=False
             print("error de parentesis, parentesis o palos")
         guardar_funciones(tokens)
+        
         guaradar_variables(tokens)
         for i in range(len(tokens)):
             if tokens[i] in conditions or tokens[i] in complex_commands_2_keys or tokens[i] in complex_commands_keys:
@@ -292,8 +298,18 @@ def verificar_todo(tokens):
                 if verficicar_loop(tokens,i)!=True:
                     print("error", i, "while")
                     correcto=False
+            if tokens[i] in funiones_creadas:
+                verificar=verificar_funciones(tokens,i)
+                if verificar==False:
+                    print("Error en la funcion")
+
         termino=False
-    return correcto
+
+    if correcto:
+        print("SI, el programa es correcto")
+    else:
+        print("NO, el programa es incorrecto")
+    
             
 
       
@@ -305,5 +321,4 @@ guaradar_variables(tokens)
 guardar_funciones(tokens)
 print(verificar_todo(tokens))
 
-print(tokens[40])
 #print(contar_corechetes(tokens), contar_parentesis(tokens), contar_palos(tokens))
