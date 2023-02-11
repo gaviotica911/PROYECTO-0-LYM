@@ -4,12 +4,12 @@ PROCS
 putCB [ |c, b| assignTo: 1, one;
 put:c, Chips; put:b, Balloons ]
 
-goNorth[||
+goNorth [ | |
 while: canMoveToThe: 1, north do: [ moveInDir: 1, north]
 ]
 
 goWest [ |   | if: canMoveInDir: 1, west then: [moveInDir: 1, 
-	west] else: [nop:]]
+	west] else: [nop : ] ]
 [
 goto: 3,3;
 putCB: 2,1

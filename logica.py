@@ -1,8 +1,22 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Feb  8 13:36:05 2023
+READ ME
 
-@author: Gabriela
+La librería utilizada para generar los tokens en NLTK
+esta librería si bien genera los tokens de manera correcta, 
+para un funcionamiento óptimo es preferibles poner espacio, especialmente entre "[","|" y ";".
+video de YouTube para descargar:
+https://www.youtube.com/watch?v=iDflkMr3Wl4&t=270s
+
+en el cmd o consola de preferencia escribir:
+pip install nltk
+para probar el archivo, solo es necesario correrlo. 
+Gabriela García 202210869
+Juan Jose Tovar
+
+
+
+pasos:
 """
 import nltk
 from nltk.tokenize import wordpunct_tokenize
@@ -135,7 +149,7 @@ def inializacion(tokens):
 
 #Función para verificar las funciones.
 
-def verificar_funciones(tokens,posicion):
+def verificar_crear_funciones(tokens,posicion):
     correcto=True
     encontro=False
     poscion_palito=0
@@ -155,6 +169,13 @@ def verificar_funciones(tokens,posicion):
                         correcto=False
                             
     return correcto
+
+#Funcion para verificar  las funciones ya creadas                        
+def verificar_funciones(tokens,posicion):
+    correcto=True
+    
+    if tokens[posicion+2].isdigit()==False:
+        correcto=False
 
 #Función para verificar la estructura de los comandos, como lo son los parametros.
                     
@@ -195,7 +216,7 @@ def verificar_commands(tokens, posicion):
                 if tokens[posicion + 2] not in conditions:
                     correcto = False
         elif tokens[posicion] == "nop":
-            if tokens[posicion + 2] != "":
+            if tokens[posicion + 1] != ":":
                 correcto = False
 
     else:
@@ -347,14 +368,13 @@ def verificar_todo(tokens):
     
             
 
-      
-archivo=cargarArchivo("PruebaCompleja.txt")
-tokens=generar_tokens(archivo)
-print(tokens)
-print("----------")
-guaradar_variables(tokens)
-guardar_funciones(tokens)
-print(verificar_todo(tokens))
+def ejecutar():
+    archivo=input("INGRESE EL NOMBRE DEL ARCHIVO: ")
+    archivo=cargarArchivo(archivo)
+    tokens=generar_tokens(archivo)
+    guaradar_variables(tokens)
+    guardar_funciones(tokens)
+    verificar_todo(tokens)
 
 
-#print(contar_corechetes(tokens), contar_parentesis(tokens), contar_palos(tokens))
+ejecutar()
